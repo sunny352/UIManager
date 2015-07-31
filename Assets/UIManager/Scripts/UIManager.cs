@@ -9,11 +9,14 @@ public class UIManager
 		UIWindow window = null;
 		if (m_windowDict.TryGetValue(prefabName, out window))
 		{
+			window.Show();
 			return window as T;
 		}
 		else
 		{
-			return CreateWindow<T>();
+			T newWindow = CreateWindow<T>();
+			newWindow.Show();
+			return newWindow;
 		}
 	}
 	public static void HideWindow<T>() where T : UIWindow
@@ -63,15 +66,34 @@ public class UIManager
 	{
 		foreach (var pair in m_windowDict)
 		{
-			pair.Value.FixedUpdate();
-			if (!pair.Value.IsVisiable())
+			if (pair.Value.IsShown())
+			{
+				pair.Value.FixedUpdate();
+			}
+			else
 			{
 				m_destroyList.Add(pair.Key);
 			}
 		}
-		for (int index = 0; index < m_destroyList.Count; ++index)
+		if (m_destroyList.Count > 0)
 		{
-			m_windowDict.Remove(m_destroyList[index]);
+			for (int index = 0; index < m_destroyList.Count; ++index)
+			{
+				UIWindow window = null;
+				if (m_windowDict.TryGetValue(m_destroyList[index], out window))
+				{
+					if (window.IsShown())
+					{
+						continue;
+					}
+					else
+					{
+						window.Destroy();
+					}
+				}
+				m_windowDict.Remove(m_destroyList[index]);
+			}
+			m_destroyList.Clear();
 		}
 	}
 

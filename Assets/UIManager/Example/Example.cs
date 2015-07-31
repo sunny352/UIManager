@@ -1,10 +1,18 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class Example : MonoBehaviour
 {
 	void Start()
 	{
 		UIManager.Init(gameObject, Loader);
+		UIManager.ShowWindow<UIDefault>();
+		StartCoroutine(HideUIDefault());
+	}
+	private IEnumerator HideUIDefault()
+	{
+		yield return new WaitForSeconds(1.0f);
+		UIManager.HideWindow<UIDefault>();
 	}
 
 	void FixedUpdate()

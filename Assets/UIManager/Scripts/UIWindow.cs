@@ -58,10 +58,7 @@ public class UIWindow
 	}
 	public void FixedUpdate()
 	{
-		if (IsShown())
-		{
-			OnFixedUpdate();
-		}
+		OnFixedUpdate();
 	}
 	public void Destroy()
 	{
