@@ -4,6 +4,7 @@ public class UIWindow
 {
 	public GameObject Window { get; private set; }
 	public string PrefabName { get; private set; }
+	public bool IsDestroyAfterHide { get; set; }
 	protected virtual void OnLoad()
 	{
 	}
@@ -27,9 +28,16 @@ public class UIWindow
 			return;
 		}
 		PrefabName = GetType().ToString();
-		Transform rootTrans = UIManager.Root.transform;
-		Window = Object.Instantiate(UIManager.Load(PrefabName), rootTrans.position, rootTrans.rotation) as GameObject;
-		Window.transform.parent = rootTrans;
+		if (null != UIManager.Root)
+		{
+			Transform rootTrans = UIManager.Root.transform;
+			Window = Object.Instantiate(UIManager.Load(PrefabName), rootTrans.position, rootTrans.rotation) as GameObject;
+			Window.transform.parent = rootTrans;
+		}
+		else
+		{
+			Window = Object.Instantiate(UIManager.Load(PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
+		}
 		Window.SetActive(false);
 		m_isShown = false;
 		OnLoad();

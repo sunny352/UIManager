@@ -8,11 +8,18 @@ public class Example : MonoBehaviour
 		UIManager.Init(gameObject, Loader);
 		UIManager.ShowWindow<UIDefault>();
 		StartCoroutine(HideUIDefault());
+		UIManager.ShowWindow<UIDestroyAfterHide>();
+		StartCoroutine(HideUIDestroyAfterHide());
 	}
 	private IEnumerator HideUIDefault()
 	{
 		yield return new WaitForSeconds(1.0f);
 		UIManager.HideWindow<UIDefault>();
+	}
+	private IEnumerator HideUIDestroyAfterHide()
+	{
+		yield return new WaitForSeconds(1.0f);
+		UIManager.HideWindow<UIDestroyAfterHide>();
 	}
 
 	void FixedUpdate()

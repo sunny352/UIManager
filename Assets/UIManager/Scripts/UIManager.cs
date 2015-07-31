@@ -59,7 +59,10 @@ public class UIManager
 	public static void Init(GameObject root, LoaderDelegate loader)
 	{
 		Root = root;
-		Loader = loader;
+		if (null != loader)
+		{
+			Loader = loader;
+		}
 	}
 	private static List<string> m_destroyList = new List<string>();
 	public static void FixedUpdate()
@@ -72,7 +75,10 @@ public class UIManager
 			}
 			else
 			{
-				m_destroyList.Add(pair.Key);
+				if (pair.Value.IsDestroyAfterHide)
+				{
+					m_destroyList.Add(pair.Key);
+				}
 			}
 		}
 		if (m_destroyList.Count > 0)
