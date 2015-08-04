@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2918a41e3abcd4246850b6329d34049f, type: 3}
+  m_Name: GroupInfo
+  m_EditorClassIdentifier: 
+  Info:
+  - Name: UINormal
+    Group: 0
+  - Name: UINormalChild
+    Group: 0
+  - Name: UIReplaceNormal
+    Group: 0
+  - Name: UITitle
+    Group: 1
+  - Name: UIWarning
+    Group: 2

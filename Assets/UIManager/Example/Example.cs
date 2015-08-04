@@ -3,23 +3,27 @@ using System.Collections;
 
 public class Example : MonoBehaviour
 {
+	private GameObject m_root;
 	void Start()
 	{
-		UIManager.Init(gameObject, Loader);
-		UIManager.ShowWindow<UIDefault>();
-		StartCoroutine(HideUIDefault());
-		UIManager.ShowWindow<UIDestroyAfterHide>();
-		StartCoroutine(HideUIDestroyAfterHide());
-	}
-	private IEnumerator HideUIDefault()
-	{
-		yield return new WaitForSeconds(1.0f);
-		UIManager.HideWindow<UIDefault>();
-	}
-	private IEnumerator HideUIDestroyAfterHide()
-	{
-		yield return new WaitForSeconds(1.0f);
-		UIManager.HideWindow<UIDestroyAfterHide>();
+		Object.DontDestroyOnLoad(gameObject);
+		GroupInfoList infoList = Resources.Load<GroupInfoList>("GroupInfo");
+		UIGroup.Init(infoList.Info);
+		GameObject root = LoadRes("UI", "UI Root");
+		if (null != root)
+		{
+			m_root = Object.Instantiate<GameObject>(root);
+			m_root.transform.parent = transform;
+			UIManager.Init(m_root, LoadRes);
+		}
+		else
+		{
+			UIManager.Init(gameObject, LoadRes);
+		}
+
+		UIManager.ShowWindow<UITitle>();
+		UIManager.ShowWindow<UINormal>();
+		UIManager.ShowWindow<UIWarning>();
 	}
 
 	void FixedUpdate()
@@ -27,8 +31,20 @@ public class Example : MonoBehaviour
 		UIManager.FixedUpdate();
 	}
 
-	private GameObject Loader(string folderPath, string prefabName)
+	private GameObject LoadRes(string folder, string prefabName)
 	{
-		return Resources.Load<GameObject>(string.Format("{0}/{1}", folderPath, prefabName));
+		GameObject obj = null;
+#if UNITY_EDITOR
+		obj = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(string.Format("Assets/{0}/{1}.prefab", folder, prefabName));
+#endif
+		if (null != obj)
+		{
+			return obj;
+		}
+		if (null == obj)
+		{
+			obj = Resources.Load<GameObject>(string.Format("{0}/{1}", folder, prefabName));
+		}
+		return obj;
 	}
 }
