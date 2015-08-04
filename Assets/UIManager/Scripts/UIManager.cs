@@ -5,19 +5,22 @@ public class UIManager
 {
 	public static T ShowWindow<T>() where T : UIWindow, new()
 	{
+		return ShowWindow<T>(null);
+	}
+	public static T ShowWindow<T>(UIWindow parent) where T : UIWindow, new()
+	{
 		string prefabName = typeof(T).ToString();
 		UIWindow window = null;
 		if (m_windowDict.TryGetValue(prefabName, out window))
 		{
-			window.Show();
-			return window as T;
+			window.Show(parent);
 		}
 		else
 		{
-			T newWindow = CreateWindow<T>();
-			newWindow.Show();
-			return newWindow;
+			window = CreateWindow<T>();
+			window.Show(parent);
 		}
+		return window as T;
 	}
 	public static void HideWindow<T>() where T : UIWindow
 	{
@@ -53,6 +56,17 @@ public class UIManager
 		window.Load();
 		m_windowDict.Add(window.PrefabName, window);
 		return window;
+	}
+	public static void HideGroup(string name)
+	{
+		int group = UIGroup.GetGroup(name);
+		foreach (var pair in m_windowDict)
+		{
+			if (UIGroup.GetGroup(pair.Key) == group && pair.Key != name)
+			{
+				HideWindow(pair.Key);
+			}
+		}
 	}
 	public static GameObject Root { get; private set; }
 	public delegate GameObject LoaderDelegate(string folderPath, string prefabName);

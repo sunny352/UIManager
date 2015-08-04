@@ -2,7 +2,9 @@
 
 public class UIWindow
 {
-	public GameObject Window { get; private set; }
+	public GameObject gameObject { get; private set; }
+	public Transform transform { get { return null != gameObject ? gameObject.transform : null; } }
+	public UIWindow Parent { get; private set; }
 	public string PrefabName { get; private set; }
 	public bool IsDestroyAfterHide { get; set; }
 	protected virtual void OnLoad()
@@ -22,7 +24,8 @@ public class UIWindow
 	}
 	public void Load()
 	{
-		if (null != Window)
+		IsDestroyAfterHide = true;
+		if (null != gameObject)
 		{
 			Debug.LogWarningFormat("{0} already loaded!", GetType().ToString());
 			return;
@@ -31,25 +34,39 @@ public class UIWindow
 		if (null != UIManager.Root)
 		{
 			Transform rootTrans = UIManager.Root.transform;
-			Window = Object.Instantiate(UIManager.Load(PrefabName), rootTrans.position, rootTrans.rotation) as GameObject;
-			Window.transform.parent = rootTrans;
+			gameObject = Object.Instantiate(UIManager.Load(PrefabName), rootTrans.position, rootTrans.rotation) as GameObject;
+			transform.localScale = rootTrans.localScale;
+			transform.parent = rootTrans;
 		}
 		else
 		{
-			Window = Object.Instantiate(UIManager.Load(PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
+			gameObject = Object.Instantiate(UIManager.Load(PrefabName), Vector3.zero, Quaternion.identity) as GameObject;
 		}
-		Window.SetActive(false);
+		gameObject.SetActive(false);
 		m_isShown = false;
 		OnLoad();
 	}
-	public void Show()
+	public void Show(UIWindow parent)
+	{
+		Parent = parent;
+		Show();
+		if (null != parent)
+		{
+			parent.SetVisiable(false);
+		}
+		else
+		{
+			UIManager.HideGroup(PrefabName);
+		}
+	}
+	private void Show()
 	{
 		if (IsShown())
 		{
 			Debug.LogWarningFormat("{0} already shown!", GetType().ToString());
 			return;
 		}
-		Window.SetActive(true);
+		gameObject.SetActive(true);
 		m_isShown = true;
 		OnShow();
 	}
@@ -60,9 +77,14 @@ public class UIWindow
 			Debug.LogWarningFormat("{0} already hidden!", GetType().ToString());
 			return;
 		}
-		Window.SetActive(false);
+		gameObject.SetActive(false);
 		m_isShown = false;
 		OnHide();
+		if (null != Parent)
+		{
+			Parent.SetVisiable(true);
+			Parent = null;
+		}
 	}
 	public void FixedUpdate()
 	{
@@ -70,12 +92,17 @@ public class UIWindow
 	}
 	public void Destroy()
 	{
-		if (null == Window)
+		if (null != Parent)
+		{
+			Parent.SetVisiable(true);
+			Parent = null;
+		}
+		if (null == gameObject)
 		{
 			Debug.LogWarningFormat("{0} already destroyed!", GetType().ToString());
 			return;
 		}
-		GameObject.Destroy(Window);
+		GameObject.Destroy(gameObject);
 		OnDestroy();
 	}
 	public bool IsShown()
@@ -85,13 +112,13 @@ public class UIWindow
 	private bool m_isShown = false;
 	public bool IsVisiable()
 	{
-		return null != Window ? Window.activeSelf : false;
+		return null != gameObject ? gameObject.activeSelf : false;
 	}
 	public void SetVisiable(bool isVisable)
 	{
-		if (null != Window)
+		if (null != gameObject && IsShown())
 		{
-			Window.SetActive(isVisable);
+			gameObject.SetActive(isVisable);
 		}
 	}
 }
