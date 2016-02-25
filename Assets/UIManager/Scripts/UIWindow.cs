@@ -36,7 +36,7 @@ public class UIWindow
 			Transform rootTrans = UIManager.Root.transform;
 			gameObject = Object.Instantiate(UIManager.Load(PrefabName), rootTrans.position, rootTrans.rotation) as GameObject;
 			transform.localScale = rootTrans.localScale;
-			transform.parent = rootTrans;
+			transform.SetParent(rootTrans);
 		}
 		else
 		{

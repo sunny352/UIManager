@@ -13,7 +13,7 @@ public class Example : MonoBehaviour
 		if (null != root)
 		{
 			m_root = Object.Instantiate<GameObject>(root);
-			m_root.transform.parent = transform;
+			m_root.transform.SetParent(transform);
 			UIManager.Init(m_root, LoadRes);
 		}
 		else
