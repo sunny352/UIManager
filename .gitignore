@@ -5,3 +5,6 @@
 /*.csproj
 /*.userprefs
 /*.suo
+.idea/.idea.UIManager/.idea
+Assets/Plugins/Editor/JetBrains
+JetBrains.meta

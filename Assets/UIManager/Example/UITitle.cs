@@ -1,13 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
 public class UITitle : UIWindow
 {
 	protected override void OnLoad()
 	{
-		transform.FindChild("OpenNormal").GetComponent<Button>().onClick.AddListener(OnNormal);
-		transform.FindChild("OpenReplace").GetComponent<Button>().onClick.AddListener(OnReplace);
+		transform.Find("OpenNormal").GetComponent<Button>().onClick.AddListener(OnNormal);
+		transform.Find("OpenReplace").GetComponent<Button>().onClick.AddListener(OnReplace);
 	}
 	private void OnNormal()
 	{

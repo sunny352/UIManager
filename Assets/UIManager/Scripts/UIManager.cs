@@ -9,8 +9,8 @@ public class UIManager
 	}
 	public static T ShowWindow<T>(UIWindow parent) where T : UIWindow, new()
 	{
-		string prefabName = typeof(T).ToString();
-		UIWindow window = null;
+		var prefabName = typeof(T).ToString();
+		UIWindow window;
 		if (m_windowDict.TryGetValue(prefabName, out window))
 		{
 			window.Show(parent);
@@ -28,7 +28,7 @@ public class UIManager
 	}
 	public static void HideWindow(string prefabName)
 	{
-		UIWindow window = null;
+		UIWindow window;
 		if (m_windowDict.TryGetValue(prefabName, out window))
 		{
 			window.Hide();
@@ -40,26 +40,19 @@ public class UIManager
 	}
 	public static bool IsVisiable(string prefabName)
 	{
-		UIWindow window = null;
-		if (m_windowDict.TryGetValue(prefabName, out window))
-		{
-			return window.IsVisiable();
-		}
-		else
-		{
-			return false;
-		}
+		UIWindow window;
+		return m_windowDict.TryGetValue(prefabName, out window) && window.IsVisiable();
 	}
 	private static T CreateWindow<T>() where T : UIWindow, new()
 	{
-		T window = new T();
+		var window = new T();
 		window.Load();
 		m_windowDict.Add(window.PrefabName, window);
 		return window;
 	}
 	public static void HideGroup(string name)
 	{
-		int group = UIGroup.GetGroup(name);
+		var group = UIGroup.GetGroup(name);
 		foreach (var pair in m_windowDict)
 		{
 			if (UIGroup.GetGroup(pair.Key) == group && pair.Key != name)
@@ -78,7 +71,7 @@ public class UIManager
 			Loader = loader;
 		}
 	}
-	private static List<string> m_destroyList = new List<string>();
+	private static readonly List<string> m_destroyList = new List<string>();
 	public static void FixedUpdate()
 	{
 		foreach (var pair in m_windowDict)
@@ -95,30 +88,31 @@ public class UIManager
 				}
 			}
 		}
-		if (m_destroyList.Count > 0)
+
+		if (m_destroyList.Count <= 0)
 		{
-			for (int index = 0; index < m_destroyList.Count; ++index)
-			{
-				UIWindow window = null;
-				if (m_windowDict.TryGetValue(m_destroyList[index], out window))
-				{
-					if (window.IsShown())
-					{
-						continue;
-					}
-					else
-					{
-						window.Destroy();
-					}
-				}
-				m_windowDict.Remove(m_destroyList[index]);
-			}
-			m_destroyList.Clear();
+			return;
 		}
+		foreach (var name in m_destroyList)
+		{
+			UIWindow window;
+			if (m_windowDict.TryGetValue(name, out window))
+			{
+				if (window.IsShown())
+				{
+					continue;
+				}
+
+				window.Destroy();
+			}
+			m_windowDict.Remove(name);
+		}
+		m_destroyList.Clear();
 	}
 
 	private static LoaderDelegate Loader { get; set; }
-	private static readonly string DefaultFolderPath = "UI";
+	private const string DefaultFolderPath = "UI";
+
 	public static GameObject Load(string prefabName)
 	{
 		return Loader(DefaultFolderPath, prefabName);
@@ -129,7 +123,7 @@ public class UIManager
 	}
 	private static GameObject DefaultLoader(string folderPath, string prefabName)
 	{
-		return Resources.Load<GameObject>(string.Format("{0}/{1}", folderPath, prefabName));
+		return Resources.Load<GameObject>($"{folderPath}/{prefabName}");
 	}
-	private static Dictionary<string, UIWindow> m_windowDict = new Dictionary<string, UIWindow>();
+	private static readonly Dictionary<string, UIWindow> m_windowDict = new Dictionary<string, UIWindow>();
 }

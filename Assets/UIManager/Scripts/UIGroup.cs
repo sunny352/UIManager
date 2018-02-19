@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 [System.Serializable]
 public class GroupInfo
@@ -11,18 +9,18 @@ public class GroupInfo
 
 public class UIGroup
 {
-	public static void Init(GroupInfo[] groupInfo)
+	public static void Init(IEnumerable<GroupInfo> groupInfo)
 	{
-		for (int index = 0; index < groupInfo.Length; ++index)
+		foreach (var info in groupInfo)
 		{
-			m_groupDict.Add(groupInfo[index].Name, groupInfo[index].Group);
+			m_groupDict.Add(info.Name, info.Group);
 		}
 	}
 	public static int GetGroup(string name)
 	{
-		int group = 0;
+		int group;
 		m_groupDict.TryGetValue(name, out group);
 		return group;
 	}
-	private static Dictionary<string, int> m_groupDict = new Dictionary<string, int>();
+	private static readonly Dictionary<string, int> m_groupDict = new Dictionary<string, int>();
 }
